@@ -4,7 +4,6 @@ from helpers import write_pid
 from userdata import TOKEN
 
 prayers = [
-    "Господи, веси, яко творши, якоже Ты волиши, да будет воля Твоя и во мне грешнем, яко благословен еси во веки.",
     "Господи, не лиши мене небесных Твоих благ.",
     "Господи, избави мя вечных мук.",
     "Господи, умом ли или помышлением, словом или делом согреших, прости мя.",
@@ -34,7 +33,7 @@ prayers = [
 def send(update, context):
     chat_id = update.message.chat_id
     hour = datetime.now().hour
-    context.bot.send_message(chat_id=chat_id, text=f"({hour}-й час:)\n{prayers[hour]}")
+    context.bot.send_message(chat_id=chat_id, text=f"({(hour + 1) % 24}-й час:)\n{prayers[hour]}")
 
 
 def main():
