@@ -1,7 +1,15 @@
 from datetime import datetime
-from telegram.ext import Updater, CommandHandler
+import logging
+
+from telegram.ext import Application, CommandHandler
+
 from helpers import write_pid
-from userdata import TOKEN
+from userinfo import TOKEN
+
+logging.basicConfig(
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+    level=logging.WARNING,
+)
 
 prayers = [
     "Господи, не лиши мене небесных Твоих благ.",
@@ -30,18 +38,23 @@ prayers = [
 ]
 
 
-def send(update, context):
-    chat_id = update.message.chat_id
+async def start(update, context):
+    await context.bot.send_message(update.message.chat_id, "24 молитвы св. Иоанна Златоуста, по часу дня или ночи")
+
+
+async def send(update, context):
     hour = datetime.now().hour
-    context.bot.send_message(chat_id=chat_id, text=f"({(hour + 1) % 24}-й час:)\n{prayers[hour]}")
+    await context.bot.send_message(
+        chat_id=update.message.chat_id,
+        text=f"({(hour + 1) % 24}-й час:)\n{prayers[hour]}",
+    )
 
 
 def main():
-    updater = Updater(token=TOKEN, use_context=True)
-    dispatcher = updater.dispatcher
-    send_handler = CommandHandler('send', send)
-    dispatcher.add_handler(send_handler)
-    updater.start_polling()
+    application = Application.builder().token(TOKEN).build()
+    application.add_handler(CommandHandler('start', start))
+    application.add_handler(CommandHandler('send', send))
+    application.run_polling()
 
 
 if __name__ == '__main__':
